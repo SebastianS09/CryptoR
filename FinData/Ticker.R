@@ -26,8 +26,8 @@ make_xts <- function(x) {
 
 #export ticker data in csv
 export_tickers <- function(x,type) {
-
-  filename = paste("/Users/Sebastian/Documents/Data/Lugo/HitBTC/ticker_data_",type,"/",names(x), ".csv",sep = "")
+  dir.create(paste0("Ticker_Data_",type))
+  filename = paste0(getwd(),"/Ticker_Data_",type,"/",names(x), ".csv")
   for (i in seq_along(x)) {
     write.csv(x[[i]], filename[i])
   }
