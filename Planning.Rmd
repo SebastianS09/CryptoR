@@ -14,11 +14,13 @@ output: html_document
 
 #Structure du projet 
 
-- Données financières -> API
-<<<<<<< HEAD
-- Hype trends -> Api twitter / forum scrapping 
-- Metadonnées qualitatives sur les cryptomonnaies -> web scrapping
-=======
-- Hype trends
-- Metadonnées qualitatives sur les cryptomonnaies -> Web Scrapping
->>>>>>> 31a02adcd0f58ed9684fbcc72e88e179767ece8f
+- (1) Données financières -> API
+- (2) Hype trends -> Api twitter / forum scrapping 
+- (3) Metadonnées qualitatives sur les cryptomonnaies -> web scrapping
+
+#Taches 
+
+- Auditer / partager le code (1)
+- 
+
+
