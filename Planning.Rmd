@@ -14,4 +14,6 @@ output: html_document
 
 #Structure du projet 
 
-- 
+- Données financières -> API
+- Hype trends
+- Metadonnées qualitatives sur les cryptomonnaies -> Web Scrapping
