@@ -15,8 +15,8 @@ output: html_document
 #Structure du projet 
 
 - (1) Données financières -> API
-- (2) Hype trends -> Api twitter / forum scrapping 
-- (3) Metadonnées qualitatives sur les cryptomonnaies -> web scrapping
+- (2) Hype trends -> Api twitter / forum scraping 
+- (3) Metadonnées qualitatives sur les cryptomonnaies -> web scraping
 
 #Taches 
 
