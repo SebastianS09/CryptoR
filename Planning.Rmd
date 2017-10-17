@@ -20,7 +20,9 @@ output: html_document
 
 #Taches 
 
-- Auditer / partager le code (1)
+- Auditer / partager le code (1) puis faire un paquet 
 - 
+-
+
 
 
