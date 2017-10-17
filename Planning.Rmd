@@ -35,22 +35,6 @@ Support: Hype trends -> Api twitter + forum scraping
 - etc, 
 Support: web scraping
 
-<<<<<<< HEAD
-=======
+#Rendu
 
-#Taches 
-
-- Auditer / partager le code 
-=======
-- (1) Données financières -> API
-- (2) Hype trends -> Api twitter / forum scraping 
-- (3) Metadonnées qualitatives sur les cryptomonnaies -> web scraping
-
-#Taches 
-
-- Auditer / partager le code (1) puis faire un paquet 
-- 
--
-
-
-
+Package contenant les fonctions utilisées
