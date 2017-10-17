@@ -14,13 +14,34 @@ output: html_document
 
 #Structure du projet 
 
-- (1) Données financières -> API
-- (2) Hype trends -> Api twitter / forum scraping 
-- (3) Metadonnées qualitatives sur les cryptomonnaies -> web scraping
+(1) Données financières 
+- reconstituer les charts en extrayant les données sur un an (depuis septembre 2016) = l'historique du prix
+- tableau et/ou graphiques avec des indicateurs "techniques":
+      volatilité
+      volumes échangés
+      spread bid/ask
+Support: API de 2/3 marketplaces
+
+(2) Données sociales ("Hype trends"")
+- graphique du nombre de tweets, posts facebook par jour (ou mois) sur un an 
+- différence réseaux sociaux grand publics et forums spécialisés ?
+Support: Hype trends -> Api twitter + forum scraping
+
+(3) Données qualitatives / substantielles 
+- technologies utilisées
+- blockchain de référence
+- géographie du minage
+- utilité revendiquée
+- etc, 
+Support: web scraping
+
+
+
+
 
 #Taches 
 
-- Auditer / partager le code (1)
+- Auditer / partager le code 
 - 
 
 
