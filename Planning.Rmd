@@ -1,0 +1,17 @@
+---
+title: "Planning"
+author: "Sebastian"
+date: "17/10/2017"
+output: html_document
+---
+
+#Team
+
+- 
+-
+-
+-
+
+#Structure du projet 
+
+- 
