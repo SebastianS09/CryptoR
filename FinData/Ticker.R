@@ -16,7 +16,6 @@ make_xts <- function(x) {
         y <- as.POSIXct(x, origin="1970-01-01", tz="UTC")
         return(y)}
         }
-  
   for (i in 1:length(x)) {x[[i]]$time <- set_time(x[[i]]$time)}
     
   tickers_day <- lapply(function(x) {if (!length(x) == FALSE) {xts(x[,-1],order.by = x$time)}}, X = x)
