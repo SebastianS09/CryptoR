@@ -33,7 +33,10 @@ export_tickers <- function(x,type) {
   }
 }
 
-##DATA GENERATION
+
+
+
+### DATA GENERATION
 
 #get symbols from HitBTC
 symbols <- fromJSON("https://api.hitbtc.com/api/1/public/symbols")[[1]]
@@ -65,9 +68,14 @@ raw_hour <- function() {
   names(raw_tickers_hour) <- symbol_list
   return(raw_tickers_hour)}
 
+
+
+
+
+
 #SUMMARY: Import data, save locally and generate XTS list
 
-generate_data <- function(type,export = FALSE, fetch = FALSE) {
+generate_data <- function(type, export = FALSE, fetch = FALSE) {
     if (fetch == TRUE) {
       x <- do.call(paste("raw_",type,sep = ""),args = list())} 
     else {x <- get(paste("raw_tickers_",type,sep = ""))}
