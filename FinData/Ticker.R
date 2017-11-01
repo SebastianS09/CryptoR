@@ -42,34 +42,59 @@ metrics <- c("close","high","low","open","volumefrom","volumeto")
 
 #SUMMARY: Import data, save locally and generate XTS list
 
-generate_data <- function(type,export = FALSE) {
+generate_data <- function(type,export = FALSE, verbose = FALSE) {
+  if (type == "day") {  url0 <- "https://min-api.cryptocompare.com/data/histoday?fsym="
+                        url1 <- "&tsym=USD&allData=true&aggregate=1&extraParams=raise"} 
   
-    #get historical daily data from cryptocompare (- whithout exchange for the time being)
-    raw_day <- function() {
-      get_ticker_day <- function(x) {
-        out <- fromJSON(paste("https://min-api.cryptocompare.com/data/histoday?fsym=",x,"&tsym=USD&allData=true&aggregate=1&extraParams=raise",sep = ""))$Data
+  else if (type == "hour") { url0 <- "https://min-api.cryptocompare.com/data/histohour?fsym="
+                            url1 <- "&tsym=USD&limit=2000&aggregate=1&extraParams=raise"}   
+  
+  else  {stop("please enter day or hour")}
+
+    
+    #get historical data from cryptocompare (- whithout exchange for the time being)
+    raw <- function() {
+      get_ticker <- function(x) {
+        out <- fromJSON(paste(url0,x,url1,sep = ""))$Data
         return(out)
       }
-      raw_tickers_day <- lapply(get_ticker_day,X = symbol_list)
-      names(raw_tickers_day) <- symbol_list
-    return(raw_tickers_day)}
+      raw_tickers <- lapply(get_ticker,X = symbol_list)
+      names(raw_tickers) <- symbol_list
+    return(raw_tickers)}
   
-    #get historical hourly data from cryptocompare (- whithout exchange for the time being)
-    raw_hour <- function() {
-      get_ticker_hour <- function(x) {
-        out <- fromJSON(paste("https://min-api.cryptocompare.com/data/histohour?fsym=",x,"&tsym=USD&limit=2000&aggregate=1&extraParams=raise",sep = ""))$Data
-        return(out)
-      }
-      raw_tickers_hour <- lapply(get_ticker_hour,X = symbol_list)
-      names(raw_tickers_hour) <- symbol_list
-    return(raw_tickers_hour)}
   
     #make xts table
-    x <- do.call(paste("raw_",type,sep = ""),args = list()) 
+    x <- do.call(raw,args = list()) 
     if (export == TRUE) {export_tickers(x,type)}
-    assign(paste0("xts_",type),make_xts(x),envir = .GlobalEnv)
-  }
+    if (verbose == TRUE) {return(make_xts(x))}
+    else {assign(paste0("xts_",type),make_xts(x), envir = globalenv())}
+    }
 
+generate_data_ind <- function(type,tick_num) {
+  if (type == "day") {  url0 <- "https://min-api.cryptocompare.com/data/histoday?fsym="
+  url1 <- "&tsym=USD&allData=true&aggregate=1&extraParams=raise"} 
+  
+  else if (type == "hour") { url0 <- "https://min-api.cryptocompare.com/data/histohour?fsym="
+  url1 <- "&tsym=USD&limit=2000&aggregate=1&extraParams=raise"}   
+  
+  else  {stop("please enter day or hour")}
+
+  i <- tick_num
+  #get historical data from cryptocompare (- whithout exchange for the time being)
+  raw <- function() {
+    get_ticker <- function(x) {
+      out <- fromJSON(paste(url0,x,url1,sep = ""))$Data
+      return(out)
+    }
+    raw_tickers <- lapply(get_ticker,X = symbol_list[[i]])
+    names(raw_tickers) <- symbol_list[[i]]
+    return(raw_tickers)}
+  
+  
+  #make xts table
+  x <- do.call(raw,args = list()) 
+  return(make_xts(x))
+}
 
 
 
