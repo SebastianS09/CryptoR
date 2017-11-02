@@ -35,8 +35,10 @@ export_tickers <- function(x,type) {
 
 #get symbols from HitBTC
 symbols <- fromJSON("https://api.hitbtc.com/api/1/public/symbols")[[1]]
-symbol_list <- as.list(unique(symbols$commodity))
 
+####temporary fixed list##### symbol_list <- as.list(unique(symbols$commodity))
+symbol_list <- lapply(c("BCN","BTC","DASH","DOGE","ETH","LTC","NXT","XDN","XEM","XMR","ZEC","WAVES","MAID","REP","ETC","OMG","XTZ","CRS","XRP","EOS","SAN","AVT","PQT","8BT"
+                        ,"ZRX","MCAP","NEO","DCN","VEN","BTG","BCH","EDO","CL","EBTC"),c)
 metrics <- c("close","high","low","open","volumefrom","volumeto")
 
 
