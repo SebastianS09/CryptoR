@@ -83,20 +83,22 @@ generate_data_ind <- function(type,tick_num) {
 
   i <- tick_num
   #get historical data from cryptocompare (- whithout exchange for the time being)
-  raw <- function() {
-    get_ticker <- function(x) {
-      out <- fromJSON(paste(url0,x,url1,sep = ""))$Data
-      return(out)
-    }
-    raw_tickers <- lapply(get_ticker,X = symbol_list[[i]])
-    names(raw_tickers) <- symbol_list[[i]]
-    return(raw_tickers)}
-  
+    
+    raw_tickers <- fromJSON(paste(url0,symbol_list[[i]],url1,sep = ""))$Data
+    
   
   #make xts table
-  x <- do.call(raw,args = list()) 
-  return(make_xts(x))
-}
+    set_time <- function(x) {
+      if (is.null(x) == FALSE) {
+        y <- as.POSIXct(x, origin="1970-01-01", tz="UTC")
+        return(y)}
+    }
+    raw_tickers$time <- set_time(raw_tickers$time)
+    out <- xts(raw_tickers[,-1],order.by = raw_tickers$time)
+    return(out)
+  }
+                                   
+
 
 
 

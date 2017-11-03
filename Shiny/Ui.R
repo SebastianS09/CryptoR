@@ -14,10 +14,12 @@
                    
   tabPanel("Inputs",
     sidebarLayout(
-        textOutput("InputDesc"),
+      sidebarPanel(
+        selectInput(inputId = "Type", label = "Frequency: ", choices = c("day","hour")),
+        actionButton(inputId = "Generate", label = "Generate Data")),
         mainPanel(
             tabsetPanel(type = "tabs",
-              tabPanel("Summary", verbatimTextOutput("summary")),
+              tabPanel("Summary", textOutput("summary")),
               tabPanel("Plot", plotOutput("plot")),
               tabPanel("Table", tableOutput("table"))
                         )
@@ -33,7 +35,15 @@
                       tabPanel("Candle Stick Graphs", 
                                selectInput(inputId = "fintick", label = "Choose Crypto: ",choices = unlist(symbol_list)),
                               dygraphOutput("finsimple")),
-                      tabPanel("Plot"),
+                      tabPanel("Returns",
+                               sidebarLayout(
+                                sidebarPanel(
+                                  textInput(inputId = "rebase", label = "Base date for returns", value = "2017-01-01", placeholder = "YYYY-MM-DD"),
+                                  checkboxGroupInput(inputId = "TickRetPlot", label = "Cryptocurrencies to plot", choices = unlist(symbol_list), selected = "BTC", inline = TRUE),
+                                  actionButton(inputId = "RetRefresh", label = "Refresh")),
+                               mainPanel(
+                                 plotOutput("RetPlot")
+                                 ))),
                       tabPanel("Table")
                       )
                   )
