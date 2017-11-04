@@ -1,7 +1,3 @@
-##### Twitter sentiment analysis - Twitter.R - https://apps.twitter.com/app/14417297
-
-
-### Necessary libraries
 
 library(twitteR) ### for fetching the tweets
 library(plyr) ## for breaking the data into manageable pieces
@@ -11,11 +7,11 @@ library(rjson)
 library(stringr) ## for string processing
 library(ggplot2) ## for plotting the results
 
-##### Set API Keys (entering keys from the Twitter app)
-api_key <- ""
-api_secret <- ""
-access_token <- ""
-access_token_secret <- ""
+#### Set API Keys (entering keys from the Twitter app)
+api_key <- "zGn60BCUBLAIh4yvOUY3sAaiJ"
+api_secret <- "RT5EXrhrt6h4v3bdcWBADaQoX8WZIiJcaThvafoz68xohxM66z"
+access_token <- "752919766264901632-U3QNunFgAwRhje5YhAX83t4benQ0bvv"
+access_token_secret <- "nzaGpEYAFQczA2q9KMVDHLrOZp84Qp9Ak60eaC0HbNwFu"
 setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
 
 #### Read in dictionary of positive and negative words
