@@ -7,6 +7,7 @@ library(PerformanceAnalytics)
 #generate data needed globally
 server <- function(input, output, session) {
           updateNavbarPage(session, "mainNavbarPage", selected="Inputs")
+  
   n <- length(symbol_list)
   
   #import daily data with progress bar
@@ -38,18 +39,18 @@ server <- function(input, output, session) {
   output$FinDesc <- renderText("Financial Summary")
   
   #Summary tab
-  output$summary <- renderText(paste(n,"symbols available from CryptoCompare API"))
+  observe({if (is.null(xts_day2$data)) {output$summary <- renderText(paste(n,"symbols available from CryptoCompare API"))} else {output$summary <- renderText(paste(n,"symbols loaded from CryptoCompare API"))}})
   
   #plot tab
   summaryplot <- reactiveValues()
 
-  observe({if (input$Type == "day") {
+  observe({if (!is.null(xts_day2) & input$Type == "day") {
       summaryplot$data <- as.Date.POSIXct(unlist(lapply(FUN = function(x) { if (is.null(x)) {NULL} else {start(x)}},xts_day2$data)))
       summaryplot$plot <- ggplot(data = data.frame(summaryplot$data),aes(x=summaryplot$data)) +
-                          geom_histogram(bins = n, fill = "skyblue", col = "black") + ylim(c(0,12)) + 
+                          geom_histogram(bins = n, fill = "skyblue", col = "black") + ylim(c(0,20)) + 
                           stat_bin(aes(y=..count.., label=ifelse(..count.. > 0, ..count.., "")), bins = n, geom="text", vjust=-1)  +
                           ggtitle("New Cryptocurrencies per month") + ylab("") + xlab("Date") + 
-                          theme(text = element_text(size=15), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_blank())}
+                          theme(text = element_text(size=14), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_blank())}
     else {
       summaryplot$data <- NULL
       summaryplot$plot <- ggplot(data.frame(summaryplot$data),aes(x=summaryplot$data))}
@@ -65,18 +66,14 @@ server <- function(input, output, session) {
   
   #Returns plot
   date <- reactiveValues()
-  observe({date$min <- max(as.Date.POSIXct(unlist(lapply(FUN = function(x) { if (is.null(x)) {NULL} else {start(x)}},xts_day[input$TickRetPlot]))))})
+  observe({if(!is.null(xts_day2)) {date$min <- max(as.Date.POSIXct(unlist(lapply(FUN = function(x) 
+    {if (is.null(x)) {NULL} else {start(x)}},xts_day2$data[input$TickRetPlot]))))}})
   observe({date$max <- Sys.Date()})
-    
+
   output$dateslider <- renderUI({
     sliderInput("rebase","base date for returns:",min = date$min ,max= date$max, value = date$min)})
 
-  Ret_reac_plot <- eventReactive(input$RetRefresh,reac_returns$data[["close"]][,input$TickRetPlot])
+  Ret_reac_plot <- eventReactive(input$RetRefresh, reac_returns$data[["close"]][,input$TickRetPlot])
   output$RetPlot <- renderPlot(charts.PerformanceSummary(Ret_reac_plot(),main = "Cryptocurrency Perfomance"))
 }
 
-
-
-
-#generate cumulative return data as reac_cumret -- unnecessary so far 
-#reac_cumret <- reactive({lapply(reac_returns$data, function(x) {cumprod(x+1)})})
