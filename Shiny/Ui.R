@@ -35,7 +35,7 @@ ui <- navbarPage(tags$head(
         mainPanel(
           tabsetPanel(type = "tabs",
                       tabPanel("Candle Stick Graphs", 
-                               selectInput(inputId = "fintick", label = "Choose Crypto: ",choices = unlist(symbol_list)),
+                               selectInput(inputId = "fintick", label = "Choose Cryptocurrency: ",choices = unlist(symbol_list)),
                               dygraphOutput("finsimple")),
                       tabPanel("Returns",
                                sidebarLayout(
@@ -48,12 +48,18 @@ ui <- navbarPage(tags$head(
                                mainPanel(
                                  plotOutput("RetPlot")
                                  ))),
-                      tabPanel("Table")
-                      )
+                      tabPanel("Volume"
+                               ,sidebarLayout(
+                                  sidebarPanel(
+                                    selectInput(inputId = "VolType", label = "Volume in: ",choices = c("same cryptocurrency","USD"), selected = "USD"),
+                                    checkboxGroupInput(inputId = "TickVolPlot", label = "Cryptocurrencies to plot", choices = unlist(symbol_list), selected = "BTC", inline = TRUE),
+                                    actionButton(inputId = "VolRefresh", label = "Refresh")),
+                                  mainPanel(dygraphOutput("VolPlot") 
+                                    )
+                               )
+                        )
                   )
               )
-               
+          )     
       )
   )
-                 
-    
