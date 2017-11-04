@@ -1,6 +1,5 @@
 ### getting ticker data ###
 
-library(httr)
 library(jsonlite)
 library(xts)
 
@@ -38,7 +37,7 @@ symbols <- fromJSON("https://api.hitbtc.com/api/1/public/symbols")[[1]]
 
 ####temporary fixed list##### symbol_list <- as.list(unique(symbols$commodity))
 symbol_list <- lapply(c("BCN","BTC","DASH","DOGE","ETH","LTC","NXT","XDN","XEM","XMR","ZEC","WAVES","MAID","REP","ETC","OMG","XTZ","CRS","XRP","EOS","SAN","AVT","PQT","8BT"
-                        ,"ZRX","MCAP","NEO","DCN","VEN","BTG","BCH","EDO","CL","EBTC"),c)
+                        ,"ZRX","NEO","DCN","VEN","BTG","BCH","EDO","CL","EBTC"),c)
 metrics <- c("close","high","low","open","volumefrom","volumeto")
 
 
@@ -73,19 +72,16 @@ generate_data <- function(type,export = FALSE, verbose = FALSE) {
     }
 
 generate_data_ind <- function(type,tick_num) {
-  if (type == "day") {  url0 <- "https://min-api.cryptocompare.com/data/histoday?fsym="
-  url1 <- "&tsym=USD&allData=true&aggregate=1&extraParams=raise"} 
+  if (type == "day") {url0 <- "https://min-api.cryptocompare.com/data/histoday?fsym="
+                      url1 <- "&tsym=USD&allData=true&aggregate=1&extraParams=raise"
+                      fill_xts <- xts(,seq(as.Date("2010-01-10"),as.Date("2017-11-03"),by="day"))}
   
-  else if (type == "hour") { url0 <- "https://min-api.cryptocompare.com/data/histohour?fsym="
-  url1 <- "&tsym=USD&limit=2000&aggregate=1&extraParams=raise"}   
-  
+  else if (type == "hour") {url0 <- "https://min-api.cryptocompare.com/data/histohour?fsym="
+                            url1 <- "&tsym=USD&limit=2000&aggregate=1&extraParams=raise"}   
   else  {stop("please enter day or hour")}
 
   i <- tick_num
-  #get historical data from cryptocompare (- whithout exchange for the time being)
-    
-    raw_tickers <- fromJSON(paste(url0,symbol_list[[i]],url1,sep = ""))$Data
-    
+  raw_tickers <- fromJSON(paste(url0,symbol_list[[i]],url1,sep = ""))$Data
   
   #make xts table
     set_time <- function(x) {
@@ -93,9 +89,10 @@ generate_data_ind <- function(type,tick_num) {
         y <- as.POSIXct(x, origin="1970-01-01", tz="UTC")
         return(y)}
     }
-    raw_tickers$time <- set_time(raw_tickers$time)
-    out <- xts(raw_tickers[,-1],order.by = raw_tickers$time)
-    return(out)
+    
+  raw_tickers$time <- set_time(raw_tickers$time)
+  out <- xts(raw_tickers[,-1],order.by = raw_tickers$time)
+  return(out)
   }
                                    
 

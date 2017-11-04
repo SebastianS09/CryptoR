@@ -1,5 +1,7 @@
 # Define UI for app that draws a histogram ----
-  ui <- navbarPage(tags$head(
+library(dygraphs)  
+
+ui <- navbarPage(tags$head(
     tags$style(
       HTML(".shiny-notification {
            height: 100px;
@@ -38,7 +40,9 @@
                       tabPanel("Returns",
                                sidebarLayout(
                                 sidebarPanel(
-                                  textInput(inputId = "rebase", label = "Base date for returns", value = "2017-01-01", placeholder = "YYYY-MM-DD"),
+                                  
+                                  uiOutput('dateslider'),
+                                  
                                   checkboxGroupInput(inputId = "TickRetPlot", label = "Cryptocurrencies to plot", choices = unlist(symbol_list), selected = "BTC", inline = TRUE),
                                   actionButton(inputId = "RetRefresh", label = "Refresh")),
                                mainPanel(
