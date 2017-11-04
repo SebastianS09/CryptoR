@@ -75,8 +75,15 @@ cumreturns <- function(type) {
       
 #Volume Analysis
 
-#volumes <- function()
-
-
-
-
+#dyChart custom plots  
+dyBarChart <- function(dygraph) {
+  dyPlotter(dygraph = dygraph,
+            name = "BarChart",
+            path = system.file("examples/plotters/barchart.js", package = "dygraphs"))
+        }
+      
+dyMultiColumn <- function(dygraph) {
+  dyPlotter(dygraph = dygraph,
+            name = "MultiColumn",
+            path = system.file("examples/plotters/multicolumn.js", package = "dygraphs"))
+        }

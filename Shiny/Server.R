@@ -1,4 +1,3 @@
-# Define server logic 
 library(xts)
 library(jsonlite)
 library(ggplot2)
@@ -7,7 +6,7 @@ library(PerformanceAnalytics)
 
 #generate data needed globally
 server <- function(input, output, session) {
-          updateNavbarPage(session, "mainNavbarPage", selected="Inputs")
+  updateNavbarPage(session, "mainNavbarPage", selected="Inputs")
   
   n <- length(symbol_list)
   
@@ -18,23 +17,23 @@ server <- function(input, output, session) {
       xts_day2$data[[i]] <- generate_data_ind(input$Type,i)
       names(xts_day2$data)[i] <- symbol_list[[i]]
       incProgress(1/n, detail = paste("getting",symbol_list[[i]],"|",i,"of",n))
-      }
-    })
+    }
+  })
   })
   
   #generate trading data as reac_trading
   reac_trading <- reactiveValues()
   observe({if (!is.null(xts_day2$data)) {reac_trading$data <- trading_data(NULL,verbose = TRUE, inp = xts_day2$data)}})
-
+  
   #generate return data as reac_returns
-      reac_returns <- reactiveValues()
-      observe({if (!is.null(input$rebase)) {
-        rebaseDate <- input$rebase
-        if (sum(c(gregexpr("-",rebaseDate)[[1]])==c(5,8))==2) {reac_returns$data <- returns(NULL,start_day = input$rebase,verbose = TRUE,inp = reac_trading$data)}
-      }})
-
-
-##OUTPUTS  
+  reac_returns <- reactiveValues()
+  observe({if (!is.null(input$rebase)) {
+    rebaseDate <- input$rebase
+    if (sum(c(gregexpr("-",rebaseDate)[[1]])==c(5,8))==2) {reac_returns$data <- returns(NULL,start_day = input$rebase,verbose = TRUE,inp = reac_trading$data)}
+  }})
+  
+  
+  ##OUTPUTS  
   #Tab Descriptions
   output$InputDesc <- renderText("Summary of Cryptocurrency inputs")
   output$FinDesc <- renderText("Financial Summary")
@@ -44,14 +43,14 @@ server <- function(input, output, session) {
   
   #plot tab
   summaryplot <- reactiveValues()
-
+  
   observe({if (!is.null(xts_day2) & input$Type == "day") {
-      summaryplot$data <- as.Date.POSIXct(unlist(lapply(FUN = function(x) { if (is.null(x)) {NULL} else {start(x)}},xts_day2$data)))
-      summaryplot$plot <- ggplot(data = data.frame(summaryplot$data),aes(x=summaryplot$data)) +
-                          geom_histogram(bins = n, fill = "skyblue", col = "black") + ylim(c(0,20)) + 
-                          stat_bin(aes(y=..count.., label=ifelse(..count.. > 0, ..count.., "")), bins = n, geom="text", vjust=-1)  +
-                          ggtitle("New Cryptocurrencies per month") + ylab("") + xlab("Date") + 
-                          theme(text = element_text(size=14), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_blank())}
+    summaryplot$data <- as.Date.POSIXct(unlist(lapply(FUN = function(x) { if (is.null(x)) {NULL} else {start(x)}},xts_day2$data)))
+    summaryplot$plot <- ggplot(data = data.frame(summaryplot$data),aes(x=summaryplot$data)) +
+      geom_histogram(bins = n, fill = "skyblue", col = "black") + ylim(c(0,20)) + 
+      stat_bin(aes(y=..count.., label=ifelse(..count.. > 0, ..count.., "")), bins = n, geom="text", vjust=-1)  +
+      ggtitle("New Cryptocurrencies per month") + ylab("") + xlab("Date") + 
+      theme(text = element_text(size=14), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_blank())}
     else {
       summaryplot$data <- NULL
       summaryplot$plot <- ggplot(data.frame(summaryplot$data),aes(x=summaryplot$data))}
@@ -68,13 +67,28 @@ server <- function(input, output, session) {
   #Returns plot
   date <- reactiveValues()
   observe({if(!is.null(xts_day2)) {date$min <- max(as.Date.POSIXct(unlist(lapply(FUN = function(x) 
-    {if (is.null(x)) {NULL} else {start(x)}},xts_day2$data[input$TickRetPlot]))))}})
+  {if (is.null(x)) {NULL} else {start(x)}},xts_day2$data[input$TickRetPlot]))))}})
   observe({date$max <- Sys.Date()})
-
+  
   output$dateslider <- renderUI({
     sliderInput("rebase","base date for returns:",min = date$min ,max= date$max, value = date$min)})
-
+  
   Ret_reac_plot <- eventReactive(input$RetRefresh, reac_returns$data[["close"]][,input$TickRetPlot])
   output$RetPlot <- renderPlot(charts.PerformanceSummary(Ret_reac_plot(),main = "Cryptocurrency Perfomance"))
-}
 
+  #Volume Plot
+  vol <- reactiveValues()
+  observe({if(input$VolType == "USD") {vol$type <- "volumeto"} else {vol$type <- "volumefrom"}})
+  lengthVol <- reactive({length(input$TickVolPlot)})  
+  
+ # strVol <- reactive({print(str(input$TickvolPlot))})
+  
+    output$text <- renderText(strVol())
+  
+  Vol_reac_plot <- eventReactive(input$VolRefresh, reac_trading$data[[vol$type]][,input$TickVolPlot]/(1000000*(vol$type=="volumeto")+1))
+  observe({if (lengthVol()<=1) {
+              output$VolPlot <- renderDygraph(dyBarChart(dygraph(Vol_reac_plot())))}
+          else if (lengthVol()>1) {output$VolPlot <- renderDygraph(dyMultiColumn(dygraph(Vol_reac_plot())))}
+  })
+
+}

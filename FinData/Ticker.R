@@ -90,7 +90,7 @@ generate_data_ind <- function(type,tick_num) {
     }
     
   raw_tickers$time <- set_time(raw_tickers$time)
-  out <- xts(raw_tickers[,-1],order.by = raw_tickers$time)
+  if (!is.null(dim(raw_tickers))) {out <- xts(raw_tickers[,-1],order.by = raw_tickers$time)} else {out <- xts(,seq.Date(as.Date("2017-01-01"),Sys.Date(),by="day"))}
   return(out)
   }
                                    
