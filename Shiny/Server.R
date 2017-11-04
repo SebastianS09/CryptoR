@@ -1,5 +1,6 @@
 # Define server logic 
 library(xts)
+library(jsonlite)
 library(ggplot2)
 library(dygraphs)
 library(PerformanceAnalytics)
