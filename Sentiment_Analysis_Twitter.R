@@ -20,11 +20,14 @@ setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
 
 #### Read in dictionary of positive and negative words
   ## Download the positive-words.txt and negative-words.txt from GitHub
-posText <- read.delim("/Users/pbarbizet/Desktop/Polytechnique/Cours_R/Homework_R/CryptoR/positive-words.txt",
+  positive_url <- "https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Data/positive-words.txt"
+  negative_url <- "https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Data/negative-words.txt"
+  
+posText <- read.delim(positive_url,
                       header=FALSE, stringsAsFactors=FALSE)
 posText <- posText$V1
 posText <- unlist(lapply(posText, function(x) { str_split(x, "\n") }))
-negText <- read.delim("/Users/pbarbizet/Desktop/Polytechnique/Cours_R/Homework_R/CryptoR/negative-words.txt",
+negText <- read.delim(negative_url,
                       header=FALSE, stringsAsFactors=FALSE)
 negText <- negText$V1
 negText <- unlist(lapply(negText, function(x) { str_split(x, "\n") }))
