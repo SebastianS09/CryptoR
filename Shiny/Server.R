@@ -90,5 +90,9 @@ server <- function(input, output, session) {
               output$VolPlot <- renderDygraph(dyBarChart(dygraph(Vol_reac_plot())))}
           else if (lengthVol()>1) {output$VolPlot <- renderDygraph(dyMultiColumn(dygraph(Vol_reac_plot())))}
   })
-
+  
+  output$waiting <- renderText("Please check console for progress and event notification Watch out for API call limitations")
+  output$TwitterDesc <- renderText("Twitter sentiment analysis")  
+  Twitt_reac_plot <- eventReactive(input$TwittRefresh, crypto_sentiment(input$TwittIn))
+  output$TwittOut <- renderPlot(Twitt_reac_plot())
 }

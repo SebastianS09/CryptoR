@@ -61,5 +61,14 @@ ui <- navbarPage(tags$head(
                   )
               )
           )     
-      )
+      ),
+  tabPanel("Social",  
+           sidebarLayout(
+             sidebarPanel(
+               textInput(inputId = "TwittIn", label = "CrytoCurrency to analyse", value = "Bitcoin", placeholder = "Cryptocurrency"),
+               actionButton(inputId = "TwittRefresh", label = "Launch Analysis"),
+               textOutput("waiting")),
+             mainPanel(textOutput("TwitterDesc"),
+               plotOutput("TwittOut")))
   )
+)  
