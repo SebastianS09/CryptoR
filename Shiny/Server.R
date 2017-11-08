@@ -74,7 +74,7 @@ server <- function(input, output, session) {
     sliderInput("rebase","base date for returns:",min = date$min ,max= date$max, value = date$min)})
   
   Ret_reac_plot <- eventReactive(input$RetRefresh, reac_returns$data[["close"]][,input$TickRetPlot])
-  output$RetPlot <- renderPlot(charts.PerformanceSummary(Ret_reac_plot(),main = "Cryptocurrency Perfomance"))
+  output$RetPlot <- renderPlot(charts.PerformanceSummary(Ret_reac_plot(),main = "Cryptocurrency Perfomance",bg="transparent"))
 
   #Volume Plot
   vol <- reactiveValues()
