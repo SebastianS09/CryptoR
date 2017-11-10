@@ -46,12 +46,6 @@ coin_list <- coinmarketcap %>%
 
 coin_list500 <- coin_list[c(1:500)]
 
-
-
-## ------------------------------------------------------------------------
-"SWT" %in% coin_list500
-
-
 ## ------------------------------------------------------------------------
 banking_system <- list("bank", "banking", "lending", "interest rate", "debt", "credit", "loan") 
 
@@ -100,7 +94,7 @@ text_filter <- function (text, filter_list){
   return (found_words )
 }
 
-text_filter <- function (text, filter_list){
+text_filter <- function (filter_list,text){
   words <- unlist(strsplit(text, ' '))
   found_words <- intersect(words, unlist(filter_list))
   if (!identical(found_words, character(0))) {return (found_words)}
@@ -117,7 +111,10 @@ ripple_id_selectors <- list(
   "#post-947 > section > p:nth-child(22)",
   "#post-947 > section > p:nth-child(23)")
 
-lis_paragraphs(business_mole, ripple_id_selectors)
+test <- lis_paragraphs(business_mole, ripple_id_selectors)
 
-text_filter()
+matches <- function(list,paragraphs) {
+  temp <- function(x) {text_filter(x,paragraphs)}
+  lapply(list,temp)
+}
 

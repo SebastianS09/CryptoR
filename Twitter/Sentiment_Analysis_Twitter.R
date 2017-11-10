@@ -1,6 +1,5 @@
 ##### Twitter sentiment analysis - Twitter.R - https://apps.twitter.com/app/14417297
 
-
 ### Necessary libraries
 
 library(twitteR) ### for fetching the tweets

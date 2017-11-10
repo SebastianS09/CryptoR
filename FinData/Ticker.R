@@ -32,14 +32,24 @@ export_tickers <- function(x,type) {
 
 ##DATA GENERATION
 
-#get symbols from HitBTC
-symbols <- fromJSON("https://api.hitbtc.com/api/1/public/symbols")[[1]]
+#get symbols from CryptoCompare
+symbols_full <- fromJSON("https://www.cryptocompare.com/api/data/coinlist/")$Data
+
+symbols <- list()
+for (i in 1:length(symbols_full)) {symbols[i] <- symbols_full[[i]]["CoinName"]}
+names(symbols) <- names(symbols_full)
+
+top_crypto <- function(x) {fromJSON(paste0("https://api.coinmarketcap.com/v1/ticker/?start=0&limit=",x))$symbol}
 
 ####temporary fixed list##### symbol_list <- as.list(unique(symbols$commodity))
-symbol_list <- lapply(c("BCN","BTC","DASH","DOGE","ETH","LTC","NXT","XDN","XEM","XMR","ZEC","WAVES","MAID","REP","ETC","OMG","XTZ","CRS","XRP","EOS","SAN","AVT","PQT","8BT"
-                        ,"ZRX","NEO","DCN","VEN","BTG","BCH","EDO","CL"),c)
-metrics <- c("close","high","low","open","volumefrom","volumeto")
+  #symbol_list <- lapply(c("BCN","BTC","DASH","DOGE","ETH","LTC","NXT","XDN","XEM","XMR","ZEC","WAVES","MAID","REP","ETC","OMG","XTZ","CRS","XRP","EOS","SAN","AVT","PQT","8BT"
+  #                      ,"ZRX","NEO","DCN","VEN","BTG","BCH","EDO","CL"),c)
 
+top_API_symbols <- function(x) {intersect(top_crypto(x),names(symbols))}
+
+symbol_list <- top_API_symbols(100)
+
+metrics <- c("close","high","low","open","volumefrom","volumeto")
 
 #SUMMARY: Import data, save locally and generate XTS list
 

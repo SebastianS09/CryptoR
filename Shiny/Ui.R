@@ -1,7 +1,8 @@
 # Define UI for app that draws a histogram ----
 library(dygraphs)  
 
-ui <- navbarPage(tags$head(
+ui <- navbarPage(
+  tags$head(
     tags$style(
       HTML(".shiny-notification {
            height: 100px;
@@ -9,55 +10,57 @@ ui <- navbarPage(tags$head(
            position:fixed;
            top: calc(50% - 50px);;
            left: calc(50% - 400px);;
-           }","body {background-color: #EFFBFB; }")
-           )),
-           title="CryptoCurrency Explorer", id="mainNavbarPage",
-                   
+           }","body {background-color: #EFFBFB; }"),
+      type = "text/css", '#finwell {width: 130%}')),
+  
+  title="CryptoCurrency Explorer", id="mainNavbarPage",
+  
   tabPanel("Inputs",
     sidebarLayout(
-      sidebarPanel(
-        selectInput(inputId = "Type", label = "Frequency: ", choices = c("day","hour")),
-        actionButton(inputId = "Generate", label = "Generate Data")),
-        mainPanel(wellPanel(
+      sidebarPanel(width=4,
+                numericInput(inputId = "CryptoNumber", label = "Top n cryptocurrencies", value = 100, min = 1, max = length(symbols_full)),
+                selectInput(inputId = "Type", label = "Frequency: ", choices = c("day","hour")),
+                actionButton(inputId = "Generate", label = "Generate Data")),
+        mainPanel(
             tabsetPanel(type = "tabs",
-              tabPanel("Summary", textOutput("summary")),
+              tabPanel("Summary", htmlOutput("summary"), align="center"),
               tabPanel("Plot", plotOutput("plot")),
-              tabPanel("Table", tableOutput("table"))
-                        ))
+              tabPanel("Table", dataTableOutput("table")))
                   )
-                  )
+                )
               ),
                   
   tabPanel("Financials",  
       sidebarLayout(
-        textOutput("FinDesc"),
-        mainPanel(wellPanel(
+        htmlOutput("FinDesc",align = "center"),
+        mainPanel(wellPanel(id='finwell',
           tabsetPanel(type = "tabs",
                       tabPanel("Candle Stick Graphs", 
-                               selectInput(inputId = "fintick", label = "Choose Cryptocurrency: ",choices = unlist(symbol_list)),
+                               uiOutput('cryptochoiceFin'),
+                               #selectInput(inputId = "fintick", label = "Choose Cryptocurrency: ", choices = unlist(symbol_list),
                               dygraphOutput("finsimple")),
                       tabPanel("Returns",
                                sidebarLayout(
                                 sidebarPanel(
                                   uiOutput('dateslider'),
-                                  checkboxGroupInput(inputId = "TickRetPlot", label = "Cryptocurrencies to plot", choices = unlist(symbol_list), selected = "BTC", inline = TRUE),
+                                  uiOutput('cryptochoiceRet'),
                                   actionButton(inputId = "RetRefresh", label = "Refresh")),
-                               mainPanel(plotOutput("RetPlot",width = "700",height="700")
-                                 ))),
+                               mainPanel(plotOutput("RetPlot"))
+                               )),
                       tabPanel("Volume"
                                ,sidebarLayout(
                                   sidebarPanel(
-                                    checkboxGroupInput(inputId = "TickVolPlot", label = "Cryptocurrencies to plot", choices = unlist(symbol_list), selected = "BTC", inline = TRUE),
+                                    uiOutput('cryptochoiceVol'),
                                     actionButton(inputId = "VolRefresh", label = "Refresh")),
                                   mainPanel(selectInput(inputId = "VolType", label = "Volume in: ",choices = c("same cryptocurrency","USD"), selected = "USD"),
                                     dygraphOutput("VolPlot"))
                                     )
                                )
-                        )
+                        
                   )
-              ))
-               
-      ),
+              )
+        )    
+      )),
   tabPanel("Social",  
            sidebarLayout(
              sidebarPanel(

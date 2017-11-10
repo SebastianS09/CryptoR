@@ -8,6 +8,8 @@
   # 1.01   0.87  0.90 2000        3549
 
 #creates list of xts objects (one per financial metrics) with the price and volume for a given day for every currency
+
+
 trading_data <- function(type,vars = metrics, coins = symbol_list,verbose = FALSE, inp=NULL) {
   # aggr creates one xts object per financial metric with all the cryptocurrencies as columns from raw API data stored in xts_day or xts_hour
   aggr <- function(input,metric,coin = coins) {

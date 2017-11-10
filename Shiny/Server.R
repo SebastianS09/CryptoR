@@ -5,18 +5,19 @@ library(dygraphs)
 library(PerformanceAnalytics)
 
 #generate data needed globally
+
 server <- function(input, output, session) {
   updateNavbarPage(session, "mainNavbarPage", selected="Inputs")
-  
-  n <- length(symbol_list)
+  symbol_list <- eventReactive(input$Generate,top_API_symbols(input$CryptoNumber))
+  n <- reactive({length(symbol_list())})
   
   #import daily data with progress bar
   xts_day2 <- reactiveValues()
   observeEvent(input$Generate, {withProgress(message = "Fetching Data", detail = "Cryptocompare API", value = 0, {
-    for (i in 1:n) {
+    for (i in 1:n()) {
       xts_day2$data[[i]] <- generate_data_ind(input$Type,i)
-      names(xts_day2$data)[i] <- symbol_list[[i]]
-      incProgress(1/n, detail = paste("getting",symbol_list[[i]],"|",i,"of",n))
+      names(xts_day2$data)[i] <- symbol_list()[[i]]
+      incProgress(1/n(), detail = paste("getting",symbol_list()[[i]],"|",i,"of",n()))
     }
   })
   })
@@ -36,10 +37,10 @@ server <- function(input, output, session) {
   ##OUTPUTS  
   #Tab Descriptions
   output$InputDesc <- renderText("Summary of Cryptocurrency inputs")
-  output$FinDesc <- renderText("Financial Summary")
+  output$FinDesc <- renderText(paste("<b>","Financial Summary","<br>"))
   
   #Summary tab
-  observe({if (is.null(xts_day2$data)) {output$summary <- renderText(paste(n,"symbols available from CryptoCompare API"))} else {output$summary <- renderText(paste(n,"symbols loaded from CryptoCompare API"))}})
+  observe({if (is.null(xts_day2$data)) {output$summary <- renderText(paste("<b>",length(symbols_full),"symbols available from CryptoCompare API","<br>"))} else {output$summary <- renderText(paste("<b>",n(),"symbols loaded from CryptoCompare API","<br>"))}})
   
   #plot tab
   summaryplot <- reactiveValues()
@@ -47,8 +48,8 @@ server <- function(input, output, session) {
   observe({if (!is.null(xts_day2) & input$Type == "day") {
     summaryplot$data <- as.Date.POSIXct(unlist(lapply(FUN = function(x) { if (is.null(x)) {NULL} else {start(x)}},xts_day2$data)))
     summaryplot$plot <- ggplot(data = data.frame(summaryplot$data),aes(x=summaryplot$data)) +
-      geom_histogram(bins = n, fill = "skyblue", col = "black") + ylim(c(0,20)) + 
-      stat_bin(aes(y=..count.., label=ifelse(..count.. > 0, ..count.., "")), bins = n, geom="text", vjust=-1)  +
+      geom_histogram(bins = n(), fill = "skyblue", col = "black") + ylim(c(0,20)) + 
+      stat_bin(aes(y=..count.., label=ifelse(..count.. > 0, ..count.., "")), bins = n(), geom="text", vjust=-1)  +
       ggtitle("New Cryptocurrencies per month") + ylab("") + xlab("Date") + 
       theme(text = element_text(size=14), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_blank())}
     else {
@@ -59,19 +60,29 @@ server <- function(input, output, session) {
   observe({output$plot <- renderPlot(summaryplot$plot)})
   
   #table tab
-  output$table <- renderTable(symbols)
+  output$table <- renderDataTable(data.frame(do.call(rbind,symbols_full[unlist(symbol_list())])))
   
   #financial plot
   output$finsimple <- renderDygraph({dyCandlestick(dygraph(xts_day2$data[[input$fintick]][,1:4]))})
   
   #Returns plot
   date <- reactiveValues()
-  observe({if(!is.null(xts_day2)) {date$min <- max(as.Date.POSIXct(unlist(lapply(FUN = function(x) 
-  {if (is.null(x)) {NULL} else {start(x)}},xts_day2$data[input$TickRetPlot]))))}})
+  observe({if(!is.null(input$TickRetPlot)) {date$min <- max(as.Date.POSIXct(unlist(lapply(FUN = function(x) 
+  {if (is.null(x)) {NULL} else {start(x)}},xts_day2$data[input$TickRetPlot]))))} else {date$min <- Sys.Date()}})
   observe({date$max <- Sys.Date()})
   
-  output$dateslider <- renderUI({
-    sliderInput("rebase","base date for returns:",min = date$min ,max= date$max, value = date$min)})
+  observe({output$dateslider <- renderUI({
+    sliderInput("rebase","base date for returns:",min = date$min ,max= date$max, value = date$min)})})
+  
+  output$cryptochoiceFin <- renderUI({
+    selectInput(inputId = "fintick", label = "Choose Cryptocurrency: ", choices = unlist(symbol_list()))})
+  
+  output$cryptochoiceRet <- renderUI({
+    checkboxGroupInput("TickRetPlot", "Cryptocurrencies to plot", choices = unlist(symbol_list()), selected = "BTC", inline = TRUE)})
+  
+  output$cryptochoiceVol <- renderUI({
+    checkboxGroupInput("TickVolPlot", "Cryptocurrencies to plot", choices = unlist(symbol_list()), selected = "BTC", inline = TRUE)})
+  
   
   Ret_reac_plot <- eventReactive(input$RetRefresh, reac_returns$data[["close"]][,input$TickRetPlot])
   output$RetPlot <- renderPlot(charts.PerformanceSummary(Ret_reac_plot(),main = "Cryptocurrency Perfomance",bg="transparent"))
@@ -80,9 +91,7 @@ server <- function(input, output, session) {
   vol <- reactiveValues()
   observe({if(input$VolType == "USD") {vol$type <- "volumeto"} else {vol$type <- "volumefrom"}})
   lengthVol <- reactive({length(input$TickVolPlot)})  
-  
- # strVol <- reactive({print(str(input$TickvolPlot))})
-  
+
     output$text <- renderText(strVol())
   
   Vol_reac_plot <- eventReactive(input$VolRefresh, reac_trading$data[[vol$type]][,input$TickVolPlot]/(1000000*(vol$type=="volumeto")+1))
@@ -93,6 +102,7 @@ server <- function(input, output, session) {
   
   output$waiting <- renderText("Please check console for progress and event notification Watch out for API call limitations")
   output$TwitterDesc <- renderText("Twitter sentiment analysis")  
+  
   Twitt_reac_plot <- eventReactive(input$TwittRefresh, crypto_sentiment(input$TwittIn))
   output$TwittOut <- renderPlot(Twitt_reac_plot())
 }
