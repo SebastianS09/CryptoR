@@ -6,16 +6,24 @@ library(twitteR) ### for fetching the tweets
 library(plyr) ## for breaking the data into manageable pieces
 library(ROAuth) ## for R authentification
 library(httr)
-library(rjson)
 library(stringr) ## for string processing
 library(ggplot2) ## for plotting the results
 
 ##### Set API Keys (entering keys from the Twitter app)
-api_key <- ""
-api_secret <- ""
-access_token <- ""
-access_token_secret <- ""
-setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
+
+#credentials in Server.R 
+input_credentials <- function(key,secret,token,token_secret){
+  out <- list(key,secret,token,token_secret)
+  names(out) <- c("key","secret","token","token_secret")
+  return(out)
+}
+
+#api_key <- input_credentials("a","b","c","d")$key
+#api_secret <- input_credentials("a","b","c","d")$secret
+#access_token <- input_credentials("a","b","c","d")$token
+#access_token_secret <- input_credentials("a","b","c","d")$token_secret
+
+
 
 #### Read in dictionary of positive and negative words
   ## Download the positive-words.txt and negative-words.txt from GitHub
@@ -34,7 +42,11 @@ neg.words = c(negText, 'wtf', 'wait', 'waiting','epicfail', 'mechanical')
 
 
 crypto_sentiment <- function(crypto) {
-
+  setup_twitter_oauth(input_credentials("a","b","c","d")$key
+                      ,input_credentials("a","b","c","d")$secret
+                      ,input_credentials("a","b","c","d")$token
+                      ,input_credentials("a","b","c","d")$token_secret)
+  
     #### Convert the entered location into coordinates
       #geo <- geocode(paste0(city,", ",state), oneRecord=TRUE)
       #lat <- geo$latitude

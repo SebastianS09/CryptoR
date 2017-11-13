@@ -1,12 +1,17 @@
-library(xts)
+#library(xts)
 library(jsonlite)
 library(ggplot2)
-library(dygraphs)
-library(PerformanceAnalytics)
+#library(dygraphs)
+#library(PerformanceAnalytics)
 
 #generate data needed globally
 
 server <- function(input, output, session) {
+  
+  source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Data_Preparation.R")
+  source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Ticker.R")
+  #source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Twitter/Sentiment_Analysis_Twitter.R")
+  
   updateNavbarPage(session, "mainNavbarPage", selected="Inputs")
   symbol_list <- eventReactive(input$Generate,top_API_symbols(input$CryptoNumber))
   n <- reactive({length(symbol_list())})
@@ -103,6 +108,17 @@ server <- function(input, output, session) {
   output$waiting <- renderText("Please check console for progress and event notification Watch out for API call limitations")
   output$TwitterDesc <- renderText("Twitter sentiment analysis")  
   
+  
+  ###Social 
   Twitt_reac_plot <- eventReactive(input$TwittRefresh, crypto_sentiment(input$TwittIn))
   output$TwittOut <- renderPlot(Twitt_reac_plot())
+  
+    #Authentication
+  in_cred <- reactiveValues()
+  observe({in_cred$data <- list(input$key_in,input$secret_in,input$token_in,input$token_secret_in)})
+  
+  auth <- eventReactive(input$TwittAuth,
+                setup_twitter_oauth(in_cred$data[[1]],in_cred$data[[2]],in_cred$data[[3]],in_cred$data[[4]]))
+  observe({auth()})
 }
+

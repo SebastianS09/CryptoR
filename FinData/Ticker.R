@@ -2,6 +2,10 @@
 
 library(jsonlite)
 library(xts)
+library(ggplot2)
+library(dygraphs)
+library(PerformanceAnalytics)
+
 
 #set digits for timestamp editing 
 options(digits.secs=6)
@@ -33,13 +37,13 @@ export_tickers <- function(x,type) {
 ##DATA GENERATION
 
 #get symbols from CryptoCompare
-symbols_full <- fromJSON("https://www.cryptocompare.com/api/data/coinlist/")$Data
+symbols_full <- jsonlite::fromJSON("https://min-api.cryptocompare.com/data/all/coinlist")$Data
 
 symbols <- list()
 for (i in 1:length(symbols_full)) {symbols[i] <- symbols_full[[i]]["CoinName"]}
 names(symbols) <- names(symbols_full)
 
-top_crypto <- function(x) {fromJSON(paste0("https://api.coinmarketcap.com/v1/ticker/?start=0&limit=",x))$symbol}
+top_crypto <- function(x) {jsonlite::fromJSON(paste0("https://api.coinmarketcap.com/v1/ticker/?start=0&limit=",x))$symbol}
 
 ####temporary fixed list##### symbol_list <- as.list(unique(symbols$commodity))
   #symbol_list <- lapply(c("BCN","BTC","DASH","DOGE","ETH","LTC","NXT","XDN","XEM","XMR","ZEC","WAVES","MAID","REP","ETC","OMG","XTZ","CRS","XRP","EOS","SAN","AVT","PQT","8BT"

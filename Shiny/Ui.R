@@ -23,7 +23,7 @@ ui <- navbarPage(
                 actionButton(inputId = "Generate", label = "Generate Data")),
         mainPanel(
             tabsetPanel(type = "tabs",
-              tabPanel("Summary", htmlOutput("summary"), align="center"),
+              tabPanel("Summary", h4(htmlOutput("summary")), align="center"),
               tabPanel("Plot", plotOutput("plot")),
               tabPanel("Table", dataTableOutput("table")))
                   )
@@ -37,7 +37,6 @@ ui <- navbarPage(
           tabsetPanel(type = "tabs",
                       tabPanel("Candle Stick Graphs", 
                                uiOutput('cryptochoiceFin'),
-                               #selectInput(inputId = "fintick", label = "Choose Cryptocurrency: ", choices = unlist(symbol_list),
                               dygraphOutput("finsimple")),
                       tabPanel("Returns",
                                sidebarLayout(
@@ -62,12 +61,28 @@ ui <- navbarPage(
         )    
       )),
   tabPanel("Social",  
-           sidebarLayout(
-             sidebarPanel(
-               textInput(inputId = "TwittIn", label = "CrytoCurrency to analyse", value = "Bitcoin", placeholder = "Cryptocurrency"),
-               actionButton(inputId = "TwittRefresh", label = "Launch Analysis"),
-               textOutput("waiting")),
-             mainPanel(textOutput("TwitterDesc"),
-               plotOutput("TwittOut")))
-  )
-)  
+           sidebarLayout(htmlOutput("SocDesc",align = "center"),
+              mainPanel(wellPanel(id='socialwell',
+               tabsetPanel(type = "tabs",
+                 tabPanel("Twitter",
+                        sidebarLayout(
+                          sidebarPanel(
+                            textInput("TwittIn", "CrytoCurrency to analyse", value = "Bitcoin", placeholder = "Cryptocurrency"),
+                                        actionButton("TwittRefresh", "Launch Analysis"),
+                                        textOutput("waiting")),
+                         mainPanel(textOutput("TwitterDesc"),
+                                    plotOutput("TwittOut")))),
+                 tabPanel("Configuration",
+                          textInput("key_in","API key", value = "XXX"),
+                          textInput("secret_in","API secret", value = "XXX"),
+                          textInput("token_in","API token", value = "XXX"),
+                          textInput("token_secret_in","API token secret", value = "XXX"),
+                          actionButton("TwittAuth", "Authenticate"),
+                          h5("Please find the API description ", a("here", href="https://developer.twitter.com/en/docs/basics/authentication/overview/authentication-and-authorization.html"))))
+
+           
+)
+)
+)
+)
+)
