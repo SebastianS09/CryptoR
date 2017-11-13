@@ -70,7 +70,7 @@ generate_data <- function(type,export = FALSE, verbose = FALSE) {
     #get historical data from cryptocompare (- whithout exchange for the time being)
     raw <- function() {
       get_ticker <- function(x) {
-        out <- fromJSON(paste(url0,x,url1,sep = ""))$Data
+        out <- jsonlite::fromJSON(paste(url0,x,url1,sep = ""))$Data
         return(out)
       }
       raw_tickers <- lapply(get_ticker,X = symbol_list)
@@ -94,7 +94,7 @@ generate_data_ind <- function(type,tick_num) {
   else  {stop("please enter day or hour")}
 
   i <- tick_num
-  raw_tickers <- fromJSON(paste(url0,symbol_list[[i]],url1,sep = ""))$Data
+  raw_tickers <- jsonlite::fromJSON(paste(url0,symbol_list[[i]],url1,sep = ""))$Data
   
   #make xts table
     set_time <- function(x) {

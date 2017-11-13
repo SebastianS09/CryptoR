@@ -10,7 +10,7 @@ server <- function(input, output, session) {
   
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Data_Preparation.R")
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Ticker.R")
-  #source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Twitter/Sentiment_Analysis_Twitter.R")
+  source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Twitter/Sentiment_Analysis_Twitter.R")
   
   updateNavbarPage(session, "mainNavbarPage", selected="Inputs")
   symbol_list <- eventReactive(input$Generate,top_API_symbols(input$CryptoNumber))
