@@ -23,7 +23,9 @@ title="CryptoCurrency Explorer", id="mainNavbarPage",
                 actionButton(inputId = "Generate", label = "Generate Data")),
         mainPanel(
             tabsetPanel(type = "tabs",
-              tabPanel("Summary", h4(htmlOutput("summary")), align="center"),
+              tabPanel("Summary", 
+                      h5(read.table("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Data/Intro.txt",sep="\t"),align="left"),
+                      h4(htmlOutput("summary")), align="center"),
               tabPanel("Plot", plotOutput("plot")),
               tabPanel("Table", dataTableOutput("table")))
                   )
