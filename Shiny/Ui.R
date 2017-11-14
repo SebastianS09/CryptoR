@@ -1,5 +1,6 @@
 # Define UI for app that draws a histogram ----
 library(dygraphs)  
+symbols_full <- jsonlite::fromJSON("https://min-api.cryptocompare.com/data/all/coinlist")$Data
 
 ui <- navbarPage(
   tags$head(

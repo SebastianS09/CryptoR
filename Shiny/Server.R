@@ -4,15 +4,27 @@ library(ggplot2)
 #library(dygraphs)
 #library(PerformanceAnalytics)
 
-#generate data needed globally
+##### Set API Keys for twitter (entering keys from the Twitter app)
+#twitter authentication override
+# 
+# api_key <- "2HseC7OxKqXBlVMH4v7Y9Gkf0"
+# api_secret <- "Bxw0mLKLsFtXKqLlOemidBcrxnvEDujHKwOKncmptwI1iE3sFU"
+# access_token <- "722722544197988352-06Kc8MOizeFVYtZPbk3y4xmrxgo9CNp"
+# access_token_secret <- "3fb0RuY0GsQ6lP2VcBcUd58Yx97Qzid21VaIGPmyxlSEC"
+# 
+# setup_twitter_oauth(api_key,api_secret)
 
 server <- function(input, output, session) {
-  
-  source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Data_Preparation.R")
+
+
+  symbols_full <- jsonlite::fromJSON("https://min-api.cryptocompare.com/data/all/coinlist")$Data
+
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Ticker.R")
+  source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Data_Preparation.R")
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Twitter/Sentiment_Analysis_Twitter.R")
+  #source("Untitled.R")
   
-  updateNavbarPage(session, "mainNavbarPage", selected="Inputs")
+  updateNavbarPage(session = session, "mainNavbarPage", selected="Inputs")
   symbol_list <- eventReactive(input$Generate,top_API_symbols(input$CryptoNumber))
   n <- reactive({length(symbol_list())})
   
@@ -115,10 +127,16 @@ server <- function(input, output, session) {
   
     #Authentication
   in_cred <- reactiveValues()
+  
   observe({in_cred$data <- list(input$key_in,input$secret_in,input$token_in,input$token_secret_in)})
   
-  auth <- eventReactive(input$TwittAuth,
-                setup_twitter_oauth(in_cred$data[[1]],in_cred$data[[2]],in_cred$data[[3]],in_cred$data[[4]]))
-  observe({auth()})
+  #observeEvent(input$TwittAuth, {
+   #               myapp <- oauth_app("Sebastian S",
+    #                                 key = input$key_in,
+     #                                secret = input$secret_in)
+      #                
+       #           twitter_token <- oauth1.0_token(oauth_endpoints("twitter"), myapp)})
+  
+  observeEvent(input$TwittAuth,
+                {local(setup_twitter_oauth(in_cred$data[[1]],in_cred$data[[2]],in_cred$data[[3]],in_cred$data[[4]]))})
 }
-
