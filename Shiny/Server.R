@@ -5,6 +5,7 @@
 server <- function(input, output, session) {
   
 #sourcing input files for data generation 
+  
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Ticker.R")
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Data_Preparation.R")
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Twitter/Sentiment_Analysis_Twitter.R")
