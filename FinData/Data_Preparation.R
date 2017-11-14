@@ -31,7 +31,7 @@ returns <- function(type, start_day = '2017-01-01', verbose = FALSE,inp=NULL) {
   
   # var_p calculates daily / hourly returns in % for one metric
   var_p <- function(input,start_date = start_day) {
-    out <- (input[paste0(start_date,"::"),] - lag(input[paste0(start_date,"::"),]))/lag(input[paste0(start_date,"::"),])
+    out <- (input[paste0(start_date,"::"),] - stats::lag(input[paste0(start_date,"::"),]))/stats::lag(input[paste0(start_date,"::"),])
     out[is.nan(out)] <- 0
     out[is.na(out)] <- 0
     # is.nan = is not a number
