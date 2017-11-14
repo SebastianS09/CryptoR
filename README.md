@@ -1,5 +1,5 @@
 # CryptoR
-A package to gather cryptocurrency-related information 
+**A package to gather cryptocurrency-related information 
 
 The R project we have chosen to lead had an intimate link with a broader subject that particularly attracts us: cryptocurrencies. As a matter of fact, we wanted to take advantage of the exercise to create indicators of the state of a cryptocurrency (i.e. its financial or social perception). Gathering all this information – through APIs, websites or social networks – has enabled us to code a Shiny application, displaying the output of our researches. 
 
