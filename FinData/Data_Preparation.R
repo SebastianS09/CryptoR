@@ -1,6 +1,8 @@
+### FUNCTIONS TO AGGREGATE THE RAW FINANCIAL DATA
 
-#creates list of xts objects (one per financial metrics) with the price and volume for a given day for every currency
 
+#trading data creates list of xts objects (one per financial metrics) with the price and volume for a given day for every currency
+#note: same as before, when called "tradig_data("days")", automatically takes as input "xts_day" and automatically generates "trading_day"
 trading_data <- function(type,vars = metrics, coins = symbol_list,verbose = FALSE, inp=NULL) {
   # aggr creates one xts object per financial metric with all the cryptocurrencies as columns from raw API data stored in xts_day or xts_hour
   aggr <- function(input,metric,coin = coins) {
@@ -27,6 +29,7 @@ trading_data <- function(type,vars = metrics, coins = symbol_list,verbose = FALS
 }
 
 #creates list of xts objects (one per financial metrics) with the % returns for a given day for every currency
+#note: same logic
 returns <- function(type, start_day = '2017-01-01', verbose = FALSE,inp=NULL) {
   
   # var_p calculates daily / hourly returns in % for one metric
@@ -50,6 +53,7 @@ returns <- function(type, start_day = '2017-01-01', verbose = FALSE,inp=NULL) {
 
 
 #creates list of xts objects (one per financial metrics) with the cumulative returns for a given day for every currency
+#note: same logic
 cumreturns <- function(type) {
   
   # cum_var calculates cumulative returns

@@ -9,12 +9,6 @@ library(httr)
 library(stringr) ## for string processing
 library(ggplot2) ## for plotting the results
 
-#api_key <- "2HseC7OxKqXBlVMH4v7Y9Gkf0"
-#api_secret <- "Bxw0mLKLsFtXKqLlOemidBcrxnvEDujHKwOKncmptwI1iE3sFU"
-#access_token <- ""
-#access_token_secret <- ""
-
-#setup_twitter_oauth(api_key,api_secret)
 
 #### Read in dictionary of positive and negative words
   ## Download the positive-words.txt and negative-words.txt from GitHub
@@ -34,7 +28,7 @@ neg.words = c(negText, 'wtf', 'wait', 'waiting','epicfail', 'mechanical')
 
 crypto_sentiment <- function(crypto) {
   
-    #### Convert the entered location into coordinates
+    #### Convert the entered location into coordinates (not implemented yet)
       #geo <- geocode(paste0(city,", ",state), oneRecord=TRUE)
       #lat <- geo$latitude
       #lon <- geo$longitude

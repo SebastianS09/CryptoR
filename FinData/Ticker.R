@@ -1,18 +1,20 @@
-### getting ticker data ###
-
+### Libraries 
 library(jsonlite)
 library(xts)
 library(ggplot2)
 library(dygraphs)
 library(PerformanceAnalytics)
 
+### GETTING RAW FINANCIAL DATA FROM CRYPTOCOMPARE API###
 
-#set digits for timestamp editing 
+#note: the financial data functions are designed to either run with the shiny app, either be sourced from the file directly. In the second case, raw financial data and subsequent transformation will be assigned directly to new objects, the only parameter being "day" or "hour"
+
+
+#set digits for timestamp editing (xts package requirement)
 options(digits.secs=6)
 
-#create xts time series from raw data
+#creating a function to make xts time series from raw data
 make_xts <- function(x) {
-  
     ##convert unix timestamps to usual date format
     set_time <- function(x) {
       if (is.null(x) == FALSE) {
@@ -24,7 +26,7 @@ make_xts <- function(x) {
   tickers_day <- lapply(function(x) {if (!length(x) == FALSE) {xts(x[,-1],order.by = x$time)}}, X = x)
   return(tickers_day)}
 
-#export ticker data in csv
+#export ticker data in csv (direct use only)
 export_tickers <- function(x,type) {
   if (!dir.exists(paste0("Ticker_Data_",type))) {dir.create(paste0("Ticker_Data_",type))} 
   filename = paste0(getwd(),"/Ticker_Data_",type,"/",names(x), ".csv")
@@ -44,18 +46,12 @@ for (i in 1:length(symbols_full)) {symbols[i] <- symbols_full[[i]]["CoinName"]}
 names(symbols) <- names(symbols_full)
 
 top_crypto <- function(x) {jsonlite::fromJSON(paste0("https://api.coinmarketcap.com/v1/ticker/?start=0&limit=",x))$symbol}
-
-####temporary fixed list##### symbol_list <- as.list(unique(symbols$commodity))
-  #symbol_list <- lapply(c("BCN","BTC","DASH","DOGE","ETH","LTC","NXT","XDN","XEM","XMR","ZEC","WAVES","MAID","REP","ETC","OMG","XTZ","CRS","XRP","EOS","SAN","AVT","PQT","8BT"
-  #                      ,"ZRX","NEO","DCN","VEN","BTG","BCH","EDO","CL"),c)
-
 top_API_symbols <- function(x) {intersect(top_crypto(x),names(symbols))}
-
 symbol_list <- top_API_symbols(100)
 
 metrics <- c("close","high","low","open","volumefrom","volumeto")
 
-#SUMMARY: Import data, save locally and generate XTS list
+#SUMMARY: generate data through cryptocompare API, save locally and generate XTS list
 
 generate_data <- function(type,export = FALSE, verbose = FALSE) {
   if (type == "day") {  url0 <- "https://min-api.cryptocompare.com/data/histoday?fsym="
@@ -66,7 +62,6 @@ generate_data <- function(type,export = FALSE, verbose = FALSE) {
   
   else  {stop("please enter day or hour")}
 
-    
     #get historical data from cryptocompare (- whithout exchange for the time being)
     raw <- function() {
       get_ticker <- function(x) {
@@ -85,6 +80,7 @@ generate_data <- function(type,export = FALSE, verbose = FALSE) {
     else {assign(paste0("xts_",type),make_xts(x), envir = globalenv())}
     }
 
+#function for use in shiny (same structure but single object to be able to make loops (necessary for progress bar))
 generate_data_ind <- function(type,tick_num) {
   if (type == "day") {url0 <- "https://min-api.cryptocompare.com/data/histoday?fsym="
                       url1 <- "&tsym=USD&allData=true&aggregate=1&extraParams=raise"}

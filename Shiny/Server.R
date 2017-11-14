@@ -1,6 +1,10 @@
+####Shiny Server
+
+#to run app, please execute runGitHub("SebastianS09/CryptoR",subdir = "Shiny") in RStudio (shiny library needs to be loaded)
+
 server <- function(input, output, session) {
   
-
+#sourcing input files for data generation 
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Ticker.R")
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Data_Preparation.R")
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Twitter/Sentiment_Analysis_Twitter.R")
@@ -12,19 +16,19 @@ server <- function(input, output, session) {
   n <- reactive({length(symbol_list())})
   
   #import daily data with progress bar
-  xts_day2 <- reactiveValues()
+  xts <- reactiveValues()
   observeEvent(input$Generate, {withProgress(message = "Fetching Data", detail = "Cryptocompare API", value = 0, {
     for (i in 1:n()) {
-      xts_day2$data[[i]] <- generate_data_ind(input$Type,i)
-      names(xts_day2$data)[i] <- symbol_list()[[i]]
+      xts$data[[i]] <- generate_data_ind(input$Type,i)
+      names(xts$data)[i] <- symbol_list()[[i]]
       incProgress(1/n(), detail = paste("getting",symbol_list()[[i]],"|",i,"of",n()))
-    }
-  })
+      }
+    })
   })
   
   #generate trading data as reac_trading
   reac_trading <- reactiveValues()
-  observe({if (!is.null(xts_day2$data)) {reac_trading$data <- trading_data(NULL,verbose = TRUE, inp = xts_day2$data)}})
+  observe({if (!is.null(xts$data)) {reac_trading$data <- trading_data(NULL,verbose = TRUE, inp = xts$data)}})
   
   #generate return data as reac_returns
   reac_returns <- reactiveValues()
@@ -40,13 +44,13 @@ server <- function(input, output, session) {
   output$FinDesc <- renderText(paste("<b>","Financial Summary","<br>"))
   
   #Summary tab
-  observe({if (is.null(xts_day2$data)) {output$summary <- renderText(paste("<b>",length(symbols_full),"symbols available from CryptoCompare API","<br>"))} else {output$summary <- renderText(paste("<b>",n(),"symbols loaded from CryptoCompare API","<br>"))}})
+  observe({if (is.null(xts$data)) {output$summary <- renderText(paste("<b>",length(symbols_full),"symbols available from CryptoCompare API","<br>"))} else {output$summary <- renderText(paste("<b>",n(),"symbols loaded from CryptoCompare API","<br>"))}})
   
   #plot tab
   summaryplot <- reactiveValues()
   
-  observe({if (!is.null(xts_day2) & input$Type == "day") {
-    summaryplot$data <- as.Date.POSIXct(unlist(lapply(FUN = function(x) { if (is.null(x)) {NULL} else {start(x)}},xts_day2$data)))
+  observe({if (!is.null(xts) & input$Type == "day") {
+    summaryplot$data <- as.Date.POSIXct(unlist(lapply(FUN = function(x) { if (is.null(x)) {NULL} else {start(x)}},xts$data)))
     summaryplot$plot <- ggplot(data = data.frame(summaryplot$data),aes(x=summaryplot$data)) +
       geom_histogram(bins = n(), fill = "skyblue", col = "black") + ylim(c(0,20)) + 
       stat_bin(aes(y=..count.., label=ifelse(..count.. > 0, ..count.., "")), bins = n(), geom="text", vjust=-1)  +
@@ -63,12 +67,12 @@ server <- function(input, output, session) {
   output$table <- renderDataTable(data.frame(do.call(rbind,symbols_full[unlist(symbol_list())])))
   
   #financial plot
-  output$finsimple <- renderDygraph({dyCandlestick(dygraph(xts_day2$data[[input$fintick]][,1:4]))})
+  output$finsimple <- renderDygraph({dyCandlestick(dygraph(xts$data[[input$fintick]][,1:4]))})
   
   #Returns plot
   date <- reactiveValues()
   observe({if(!is.null(input$TickRetPlot)) {date$min <- max(as.Date.POSIXct(unlist(lapply(FUN = function(x) 
-  {if (is.null(x)) {NULL} else {start(x)}},xts_day2$data[input$TickRetPlot]))))} else {date$min <- Sys.Date()}})
+  {if (is.null(x)) {NULL} else {start(x)}},xts$data[input$TickRetPlot]))))} else {date$min <- Sys.Date()}})
   observe({date$max <- Sys.Date()})
   
   observe({output$dateslider <- renderUI({
@@ -91,8 +95,6 @@ server <- function(input, output, session) {
   vol <- reactiveValues()
   observe({if(input$VolType == "USD") {vol$type <- "volumeto"} else {vol$type <- "volumefrom"}})
   lengthVol <- reactive({length(input$TickVolPlot)})  
-
-    output$text <- renderText(strVol())
   
   Vol_reac_plot <- eventReactive(input$VolRefresh, reac_trading$data[[vol$type]][,input$TickVolPlot]/(1000000*(vol$type=="volumeto")+1))
   observe({if (lengthVol()<=1) {
@@ -102,7 +104,6 @@ server <- function(input, output, session) {
   
   output$waiting <- renderText("Please check console for progress and event notification Watch out for API call limitations")
   output$TwitterDesc <- renderText("Twitter sentiment analysis")  
-  
   
   ###Social 
   Twitt_reac_plot <- eventReactive(input$TwittRefresh, crypto_sentiment(input$TwittIn))
@@ -116,9 +117,8 @@ server <- function(input, output, session) {
   
   ###Scrapping 
     #Wikipedia
-    scrapping_out <- read.csv("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Scrapping/scrapping_top_5_out.csv")
-    names(scrapping_out)[1]<- "Category"
-    output$scrapping <- renderDataTable(scrapping_out)
   
+    scrapping_out <- read.csv("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Scrapping/scrapping_top_5_out.csv")
+    output$scrapping <- renderDataTable(scrapping_out)
    
 }

@@ -1,10 +1,10 @@
-# Define UI for app that draws a histogram ----
+###Shiny UI
+
 library(dygraphs)  
 symbols_full <- jsonlite::fromJSON("https://min-api.cryptocompare.com/data/all/coinlist")$Data
 
 ui <- navbarPage(
-  tags$head(
-    tags$style(
+  tags$head(tags$style(
       HTML(".shiny-notification {
            height: 100px;
            width: 800px;
@@ -14,8 +14,7 @@ ui <- navbarPage(
            }","body {background-color: #EFFBFB; }"),
       type = "text/css", '#finwell {width: 130%}')),
   
-  title="CryptoCurrency Explorer", id="mainNavbarPage",
-  
+title="CryptoCurrency Explorer", id="mainNavbarPage",
   tabPanel("Inputs",
     sidebarLayout(
       sidebarPanel(width=4,
@@ -47,20 +46,20 @@ ui <- navbarPage(
                                   actionButton(inputId = "RetRefresh", label = "Refresh")),
                                mainPanel(plotOutput("RetPlot"))
                                )),
-                      tabPanel("Volume"
-                               ,sidebarLayout(
+                      tabPanel("Volume",
+                               sidebarLayout(
                                   sidebarPanel(
                                     uiOutput('cryptochoiceVol'),
                                     actionButton(inputId = "VolRefresh", label = "Refresh")),
                                   mainPanel(selectInput(inputId = "VolType", label = "Volume in: ",choices = c("same cryptocurrency","USD"), selected = "USD"),
                                     dygraphOutput("VolPlot"))
-                                    )
-                               )
-                        
-                  )
-              )
-        )    
-      )),
+            )
+          )
+        )
+      )
+    )    
+  )
+),
   tabPanel("Social",  
            sidebarLayout(htmlOutput("SocDesc",align = "center"),
               mainPanel(wellPanel(id='socialwell',
@@ -82,10 +81,8 @@ ui <- navbarPage(
                           h5("Please find the API description ", a("here", href="https://developer.twitter.com/en/docs/basics/authentication/overview/authentication-and-authorization.html"))),
                  tabPanel("Wikipedia Category Scrapping",
                           dataTableOutput("scrapping")))
-
-           
-)
-)
-)
-)
+        )
+      )
+    )
+  )
 )
