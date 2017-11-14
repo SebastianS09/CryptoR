@@ -18,7 +18,7 @@ title="CryptoCurrency Explorer", id="mainNavbarPage",
   tabPanel("Inputs",
     sidebarLayout(
       sidebarPanel(width=4,
-                numericInput(inputId = "CryptoNumber", label = "Top n cryptocurrencies", value = 100, min = 1, max = length(symbols_full)),
+                numericInput(inputId = "CryptoNumber", label = "Top n cryptocurrencies", value = 20, min = 1, max = length(symbols_full)),
                 selectInput(inputId = "Type", label = "Frequency: ", choices = c("day","hour")),
                 actionButton(inputId = "Generate", label = "Generate Data")),
         mainPanel(
@@ -78,7 +78,7 @@ title="CryptoCurrency Explorer", id="mainNavbarPage",
                           textInput("token_in","API token", value = "XXX"),
                           textInput("token_secret_in","API token secret", value = "XXX"),
                           actionButton("TwittAuth", "Authenticate"),
-                          h5("Please find the API description ", a("here", href="https://developer.twitter.com/en/docs/basics/authentication/overview/authentication-and-authorization.html"))),
+                          h5("Check Rstudio Console on first Authentication. Please find the API description ", a("here", href="https://developer.twitter.com/en/docs/basics/authentication/overview/authentication-and-authorization.html"))),
                  tabPanel("Wikipedia Category Scrapping",
                           dataTableOutput("scrapping")))
         )
