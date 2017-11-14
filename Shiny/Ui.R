@@ -79,7 +79,9 @@ ui <- navbarPage(
                           textInput("token_in","API token", value = "XXX"),
                           textInput("token_secret_in","API token secret", value = "XXX"),
                           actionButton("TwittAuth", "Authenticate"),
-                          h5("Please find the API description ", a("here", href="https://developer.twitter.com/en/docs/basics/authentication/overview/authentication-and-authorization.html"))))
+                          h5("Please find the API description ", a("here", href="https://developer.twitter.com/en/docs/basics/authentication/overview/authentication-and-authorization.html"))),
+                 tabPanel("Wikipedia Category Scrapping",
+                          dataTableOutput("scrapping")))
 
            
 )

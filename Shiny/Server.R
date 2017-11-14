@@ -1,28 +1,11 @@
-#library(xts)
-library(jsonlite)
-library(ggplot2)
-#library(dygraphs)
-#library(PerformanceAnalytics)
-
-##### Set API Keys for twitter (entering keys from the Twitter app)
-#twitter authentication override
-# 
-# api_key <- "2HseC7OxKqXBlVMH4v7Y9Gkf0"
-# api_secret <- "Bxw0mLKLsFtXKqLlOemidBcrxnvEDujHKwOKncmptwI1iE3sFU"
-# access_token <- "722722544197988352-06Kc8MOizeFVYtZPbk3y4xmrxgo9CNp"
-# access_token_secret <- "3fb0RuY0GsQ6lP2VcBcUd58Yx97Qzid21VaIGPmyxlSEC"
-# 
-# setup_twitter_oauth(api_key,api_secret)
-
 server <- function(input, output, session) {
-
-
-  symbols_full <- jsonlite::fromJSON("https://min-api.cryptocompare.com/data/all/coinlist")$Data
+  
 
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Ticker.R")
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/FinData/Data_Preparation.R")
   source("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Twitter/Sentiment_Analysis_Twitter.R")
-  #source("Untitled.R")
+
+  symbols_full <- jsonlite::fromJSON("https://min-api.cryptocompare.com/data/all/coinlist")$Data
   
   updateNavbarPage(session = session, "mainNavbarPage", selected="Inputs")
   symbol_list <- eventReactive(input$Generate,top_API_symbols(input$CryptoNumber))
@@ -124,19 +107,18 @@ server <- function(input, output, session) {
   ###Social 
   Twitt_reac_plot <- eventReactive(input$TwittRefresh, crypto_sentiment(input$TwittIn))
   output$TwittOut <- renderPlot(Twitt_reac_plot())
+    #Twitter Authentication
+    in_cred <- reactiveValues()
   
-    #Authentication
-  in_cred <- reactiveValues()
+    observe({in_cred$data <- list(input$key_in,input$secret_in,input$token_in,input$token_secret_in)})
+    observeEvent(input$TwittAuth,
+               {local(setup_twitter_oauth(in_cred$data[[1]],in_cred$data[[2]],in_cred$data[[3]],in_cred$data[[4]]))})
   
-  observe({in_cred$data <- list(input$key_in,input$secret_in,input$token_in,input$token_secret_in)})
+  ###Scrapping 
+    #Wikipedia
+    scrapping_out <- read.csv("https://raw.githubusercontent.com/SebastianS09/CryptoR/master/Scrapping/scrapping_top_5_out.csv")
+    names(scrapping_out)[1]<- "Category"
+    output$scrapping <- renderDataTable(scrapping_out)
   
-  #observeEvent(input$TwittAuth, {
-   #               myapp <- oauth_app("Sebastian S",
-    #                                 key = input$key_in,
-     #                                secret = input$secret_in)
-      #                
-       #           twitter_token <- oauth1.0_token(oauth_endpoints("twitter"), myapp)})
-  
-  observeEvent(input$TwittAuth,
-                {local(setup_twitter_oauth(in_cred$data[[1]],in_cred$data[[2]],in_cred$data[[3]],in_cred$data[[4]]))})
+   
 }
